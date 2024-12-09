@@ -1,6 +1,7 @@
 package com.testautomationguru.utility;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -24,24 +25,32 @@ public class PDFUtilTest {
     @Test(priority = 2)
     public void checkForFileContent() throws IOException {
         String actual = pdfutil.getText(getFilePath("text-extract/sample.pdf"));
-        String expected = Files.readFile(new File(getFilePath("text-extract/expected.txt")));
+        String expected;
+        try (FileInputStream fis = new FileInputStream(new File(getFilePath("text-extract/expected.txt")))) {
+            expected = Files.readFile(fis);
+        }
         Assert.assertEquals(actual.trim(), expected.trim());
     }
 
     @Test(priority = 3)
     public void checkForFileContentUsingStripper() throws IOException {
         String actual = pdfutil.getText(getFilePath("text-extract-position/sample.pdf"));
-        String expected = Files.readFile(new File(getFilePath("text-extract-position/expected.txt")));
+        String expected;
+        try (FileInputStream fis = new FileInputStream(new File(getFilePath("text-extract-position/expected.txt")))) {
+            expected = Files.readFile(fis);
+        }
         Assert.assertNotEquals(actual.trim(), expected.trim());
-        
-        //should match with stripper
+
+        // should match with stripper
         PDFTextStripper stripper = new PDFTextStripper();
         stripper.setSortByPosition(true);
         pdfutil.useStripper(stripper);
         actual = pdfutil.getText(getFilePath("text-extract-position/sample.pdf"));
-        expected = Files.readFile(new File(getFilePath("text-extract-position/expected.txt")));
+        try (FileInputStream fis = new FileInputStream(new File(getFilePath("text-extract-position/expected.txt")))) {
+            expected = Files.readFile(fis);
+        }
         Assert.assertEquals(actual.trim(), expected.trim());
-        pdfutil.useStripper(null);   
+        pdfutil.useStripper(null);
     }
 
     @Test(priority = 4)
